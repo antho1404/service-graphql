@@ -1,0 +1,52 @@
+name: GraphQL service
+sid: graphql
+configuration:
+  # this service depends on the following services:
+  #  - https://github.com/ilgooz/service-graphql-introspection
+  #  - https://github.com/ilgooz/service-http-server
+  env:
+    - SCHEMA= # e.g. 'type Query { name: String }'
+    - ALLOW_GET=true
+events:
+  query:
+    data:
+      sessionID:
+        type: String
+      fields:
+        repeated: true
+        type: Object
+        object:
+          name:
+            type: String
+          fields:
+            type: Any
+            optional: true
+          args:
+            type: Object
+            repeated: true
+            optional: true
+            object:
+              name:
+                type: String
+              value:
+                type: String
+tasks:
+  completeQuery:
+    inputs:
+      sessionID:
+        type: String
+      data:
+        type: Any
+    outputs:
+      success:
+        data:
+          sessionID:
+            description: Session ID of corresponding query
+            type: String
+          elapsedTime:
+            description: Elapsed time in nanoseconds of query to complete
+            type: Number
+      error:
+        data:
+          message:
+            type: String
