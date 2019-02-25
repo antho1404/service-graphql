@@ -27,11 +27,9 @@ function sanitizeFields(nestedFields) {
 }
 
 function sanitizeArgs(args) {
-  const s = { }
-  args.forEach((arg) => {
-    const key = Object.keys(arg)[0]
-    const value = arg[key].value
-    s[key] = value
+  return args.map((arg) => {
+    const name = Object.keys(arg)[0]
+    const value = arg[name].value
+    return { name, value }
   })
-  return s
 }

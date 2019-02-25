@@ -5,46 +5,56 @@ configuration:
   #  - https://github.com/ilgooz/service-graphql-introspection
   #  - https://github.com/ilgooz/service-http-server
   env:
-    - SCHEMA= # e.g. 'type Query { name: String }'
+    - SCHEMA= # required. e.g. 'type Query { name: String }'
     - ALLOW_GET=true
 events:
   query:
+    description: Emitted for every graphql query request
     data:
       sessionID:
+        description: Unique ID of graphql query request
         type: String
       fields:
-        repeated: true
+        description: Requested query fields
         type: Object
+        repeated: true
         object:
           name:
+            description: Name of field
             type: String
           fields:
+            description: Child fields of field
             type: Any
             optional: true
           args:
+            description: Arguments of field
             type: Object
             repeated: true
             optional: true
             object:
               name:
+                description: Name of argument
                 type: String
               value:
+                description: Value of argument
                 type: String
 tasks:
   completeQuery:
     inputs:
       sessionID:
+        description: Unique ID of graphql query request
         type: String
       data:
+        description: Data to send as response to graphql query request
         type: Any
     outputs:
       success:
         data:
           sessionID:
-            description: Session ID of corresponding query
+            description: Session ID of graphql query request
             type: String
           elapsedTime:
-            description: Elapsed time in nanoseconds of query to complete
+            description: Elapsed time in nanoseconds for query request to complete
             type: Number
       error:
         data:

@@ -2,6 +2,10 @@ const service = require('mesg-js').service()
 const application = require('mesg-js').application({ endpoint: process.env.MESG_ENDPOINT })
 const { buildSchema  }  = require('graphql')
 const { parseFields } = require('./utils/fields')
+const executeTask = require('./utils/mesg.executeTask')(application)
+const listenEvent = require('./utils/mesg.listenEvent')(application)
+const listenTask = require('./utils/mesg.listenTask')(service)
+const emitEvent = require('./utils/mesg.emitEvent')(service)
 
 if (!process.env.SCHEMA) {
   console.error('graphql schema must be set into SCHEMA env var')
@@ -11,31 +15,27 @@ if (!process.env.SCHEMA) {
 // validate schema
 buildSchema(process.env.SCHEMA)
 
-service.listenTask({
+listenTask({
   completeQuery: require('./tasks/completeQuery')(application)
 })
 
-application.listenEvent({
-  serviceID: 'http-server',
-  eventFilter: 'request'
-})
+listenEvent('http-server', 'request')
   .on('data', onRequest)
   .on('error', (err) => console.error('error while listening requests:', err))
 
-async function onRequest ({ eventData }) {
+function onRequest ({ eventData }) {
   const { sessionID, path, method, body, qs} = JSON.parse(eventData)
 
   if (path === '/graphql' && (method === 'POST' || (method === 'GET' && process.env.ALLOW_GET))) {
     try {
       const queryStr = method === 'POST' ? body : JSON.parse(qs).query[0]
       const { query, variables } = JSON.parse(queryStr)
-      if (query.includes('__schema')) {
+      if (queryStr.includes('__schema')) {
         responseSchemaData(sessionID, query)
         return
       }
-
       const fields = parseFields(query, variables)
-      service.emitEvent('query', { sessionID, fields })
+      emitEvent('query', { sessionID, fields })
     } catch(err) {
       responseError(sessionID, err)
     }
@@ -43,37 +43,22 @@ async function onRequest ({ eventData }) {
 }
 
 async function responseSchemaData(sessionID, query) {
-  const { outputData } = await application.executeTaskAndWaitResult({
-    serviceID: 'graphql-introspection',
-    taskKey: 'introspect',
-    inputData: JSON.stringify({ 
-      query,
-      schema: process.env.SCHEMA
-    })
+  const { outputData } = await executeTask('graphql-introspection', 'introspect', {
+    query,
+    schema: process.env.SCHEMA
   })
-
-  const { data } = JSON.parse(outputData)
-
-  await application.executeTaskAndWaitResult({
-    serviceID: 'http-server',
-    taskKey: 'completeSession',
-    inputData: JSON.stringify({ 
-      sessionID,
-      mimeType: 'application/json',
-      content: data
-    })
+  return executeTask('http-server', 'completeSession', { 
+    sessionID,
+    mimeType: 'application/json',
+    content: outputData
   })
 }
 
-async function responseError(sessionID, err) {
-  await application.executeTaskAndWaitResult({
-    serviceID: 'http-server',
-    taskKey: 'completeSession',
-    inputData: JSON.stringify({ 
-      sessionID,
-      mimeType: 'application/json',
-      code: 400,
-      content: JSON.stringify({ message: err.message })
-    })
+function responseError(sessionID, err) {
+  return executeTask('http-server', 'completeSession', { 
+    sessionID,
+    mimeType: 'application/json',
+    code: 400,
+    content: JSON.stringify({ message: err.message })
   })
 }
