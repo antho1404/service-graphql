@@ -46,7 +46,7 @@ tasks:
         type: String
       data:
         description: Data to send as response to graphql query request
-        type: Any
+        type: Object
     outputs:
       success:
         data:

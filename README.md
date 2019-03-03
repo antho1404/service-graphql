@@ -57,7 +57,7 @@ Task key: `completeQuery`
 
 | **Name** | **Key** | **Type** | **Description** |
 | --- | --- | --- | --- |
-| **data** | `data` | `Any` | Data to send as response to graphql query request |
+| **data** | `data` | `Object` | Data to send as response to graphql query request |
 | **sessionID** | `sessionID` | `String` | Unique ID of graphql query request |
 
 ### Outputs

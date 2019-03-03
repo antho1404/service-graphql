@@ -24,7 +24,7 @@ listenEvent('http-server', 'request')
   .on('error', (err) => console.error('error while listening requests:', err))
 
 function onRequest ({ eventData }) {
-  const { sessionID, path, method, body, qs} = JSON.parse(eventData)
+  const { sessionID, path, method, body, qs } = JSON.parse(eventData)
 
   if (path === '/graphql' && (method === 'POST' || (method === 'GET' && process.env.ALLOW_GET))) {
     try {
@@ -43,14 +43,14 @@ function onRequest ({ eventData }) {
 }
 
 async function responseSchemaData(sessionID, query) {
-  const { outputData } = await executeTask('graphql-introspection', 'introspect', {
+  const { data } = await executeTask('graphql-introspection', 'introspect', {
     query,
     schema: process.env.SCHEMA
   })
   return executeTask('http-server', 'completeSession', { 
     sessionID,
     mimeType: 'application/json',
-    content: outputData
+    content: data
   })
 }
 

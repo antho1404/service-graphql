@@ -6,7 +6,7 @@ module.exports = (application) => async ({ sessionID, data }, { success, error }
       inputData: JSON.stringify({ 
         sessionID,
         mimeType: 'application/json',
-        content: JSON.stringify({data: JSON.parse(data)})
+        content: JSON.stringify({ data })
       })
     })
     const { elapsedTime } = JSON.parse(outputData)
