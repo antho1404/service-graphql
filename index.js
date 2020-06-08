@@ -1,11 +1,11 @@
-const service = require('mesg-js').service()
-const application = require('mesg-js').application({ endpoint: process.env.MESG_ENDPOINT })
+const service = new (require('@liteflow/service'))()
+const application = require('@liteflow/service').application({ endpoint: process.env.MESG_ENDPOINT })
 const { buildSchema  }  = require('graphql')
 const { parseFields } = require('./utils/fields')
-const executeTask = require('./utils/mesg.executeTask')(application)
-const listenEvent = require('./utils/mesg.listenEvent')(application)
-const listenTask = require('./utils/mesg.listenTask')(service)
-const emitEvent = require('./utils/mesg.emitEvent')(service)
+const executeTask = require('./utils/liteflow.executeTask')(application)
+const listenEvent = require('./utils/liteflow.listenEvent')(application)
+const listenTask = require('./utils/liteflow.listenTask')(service)
+const emitEvent = require('./utils/liteflow.emitEvent')(service)
 
 if (!process.env.SCHEMA) {
   console.error('graphql schema must be set into SCHEMA env var')

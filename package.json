@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "@liteflow/service": "^1.0.7",
     "apollo-server": "^2.4.2",
     "apollo-server-express": "^2.4.2",
     "body-parser": "^1.18.3",
@@ -11,8 +12,7 @@
     "graphql": "^14.1.1",
     "graphql-fields": "^2.0.1",
     "graphql-parse-fields": "^1.2.0",
-    "graphql-tools": "^4.0.4",
-    "mesg-js": "^2.0.1"
+    "graphql-tools": "^4.0.4"
   },
   "devDependencies": {},
   "scripts": {

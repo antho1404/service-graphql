@@ -1,3 +1,3 @@
-module.exports = (mesg) => (name, data) => {
-  return mesg.emitEvent(name, data)
+module.exports = (liteflow) => (name, data) => {
+  return liteflow.emitEvent(name, data)
 }

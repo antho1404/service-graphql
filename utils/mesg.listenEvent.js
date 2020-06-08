@@ -1,3 +1,3 @@
-module.exports = (mesg) => (serviceID, eventFilter) => {
-  return mesg.listenEvent({ serviceID, eventFilter })
+module.exports = (liteflow) => (serviceID, eventFilter) => {
+  return liteflow.listenEvent({ serviceID, eventFilter })
 }

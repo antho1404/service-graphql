@@ -1,3 +1,3 @@
-module.exports = (mesg) => (tasks) => {
-  return mesg.listenTask(tasks)
+module.exports = (liteflow) => (tasks) => {
+  return liteflow.listenTask(tasks)
 }
